@@ -24,13 +24,12 @@ namespace EntityModel
         }
 
         /// <summary>
-        /// Создать новое подключение к базе данных
+        /// Create new EntityModel
         /// </summary>
-        /// <param name="connection">Строка подключения</param>
-        /// <param name="backendProvider">Провайдер с параметрами подключения</param>
+        /// <param name="connection">Connection string</param>
+        /// <param name="backendProvider">Data base provider</param>
         public NameEntityModel(string connection, BackendProvider backendProvider) : base(connection, backend = GetBackendConfiguration(backendProvider), metadataSource)
         {
-            //чтоб наверняка
             connectionStringName = connection;
             backend = GetBackendConfiguration(backendProvider);
         }
@@ -64,10 +63,9 @@ namespace EntityModel
                 }
             }
 
-            this.SaveChanges();
         }
 
-        public void UpdateBatch<T>(T model) where T : IPrimaryKey
+        public void UpdateAndSave<T>(T model) where T : IPrimaryKey
         {
             var dbItem = this.GetAll<T>().Where(w => w.Id == model.Id).FirstOrDefault();
             if (dbItem != null)
@@ -77,6 +75,8 @@ namespace EntityModel
                     var val = prop.GetValue(model, null);
                     prop.SetValue(dbItem, val);
                 }
+                
+                this.SaveChanges();
             }
         }
 

@@ -1,5 +1,4 @@
-﻿using HrProcess.Model;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Telerik.OpenAccess;
 using Telerik.OpenAccess.Metadata;
 using Telerik.OpenAccess.Metadata.Fluent;
@@ -23,6 +22,11 @@ namespace EntityModel
             //http://docs.telerik.com/data-access/developers-guide/code-only-mapping/mapping-clr-types-properties-and-associations/mapping-associations/fluent-mapping-mapping-clr-mapping-associations-one-to-one
             //http://docs.telerik.com/data-access/developers-guide/code-only-mapping/mapping-clr-types-properties-and-associations/advanced-mapping/backend-independent-mapping/fluent-mapping-mapping-clr-advanced-backend-independent-string-properties
             //configuration.HasProperty(x => x.Body).WithInfiniteLength(); // string lenght
+            
+            //index
+            //http://docs.telerik.com/data-access/developers-guide/code-only-mapping/mapping-clr-types-properties-and-associations/advanced-mapping/fluent-mapping-mapping-clr-advanced-defining-indexes
+            
+            
             List<MappingConfiguration> configurations = new List<MappingConfiguration>();
 
             configurations.Add(this.GetTable());
@@ -38,6 +42,11 @@ namespace EntityModel
                          .Inheritance(Telerik.OpenAccess.InheritanceStrategy.Flat)
                          .WithConcurencyControl(OptimisticConcurrencyControlStrategy.Version);
             configuration.HasProperty(x => x.Id).IsIdentity(KeyGenerator.Autoinc);
+            //configuration.HasIndex(x => new {
+            //   x.Price,
+            //   x.ProductName
+            //}).IsUnique()
+            //.IsClustered()
             return configuration;
         }
 
