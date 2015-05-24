@@ -3,6 +3,8 @@ using System.Linq;
 using Telerik.OpenAccess;
 using Telerik.OpenAccess.Metadata;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace EntityModel
 {
@@ -50,37 +52,6 @@ namespace EntityModel
         {
         }
 
-        
-        public void Update<T>(T model) where T : IPrimaryKey
-        {
-            var dbItem = this.GetAll<T>().Where(w => w.Id == model.Id).FirstOrDefault();
-            if (dbItem != null)
-            {
-                foreach (var prop in model.GetType().GetProperties())
-                {
-                    var val = prop.GetValue(model, null);
-                    prop.SetValue(dbItem, val);
-                }
-            }
-
-        }
-
-        public void UpdateAndSave<T>(T model) where T : IPrimaryKey
-        {
-            var dbItem = this.GetAll<T>().Where(w => w.Id == model.Id).FirstOrDefault();
-            if (dbItem != null)
-            {
-                foreach (var prop in model.GetType().GetProperties())
-                {
-                    var val = prop.GetValue(model, null);
-                    prop.SetValue(dbItem, val);
-                }
-                
-                this.SaveChanges();
-            }
-        }
-
-
         public static BackendConfiguration GetBackendConfiguration(BackendProvider backendProvider = null)
         {
             if (backendProvider != null)
@@ -125,19 +96,52 @@ namespace EntityModel
             }
         }
 
-
-
-        #region IFluentModelUnitOfWork
-        public IQueryable<CLASSTYPE> PROPERTYNAME
+        public void Update<T>(T model) where T : IPrimaryKey
         {
-            get
+            var dbItem = this.GetAll<T>().Where(w => w.Id == model.Id).FirstOrDefault();
+            if (dbItem != null)
             {
-                return this.GetAll<CLASSTYPE>();
+                foreach (var prop in model.GetType().GetProperties())
+                {
+                    var val = prop.GetValue(model, null);
+                    prop.SetValue(dbItem, val);
+                }
+            }
+
+        }
+
+        public void UpdateAndSave<T>(T model) where T : IPrimaryKey
+        {
+            var dbItem = this.GetAll<T>().Where(w => w.Id == model.Id).FirstOrDefault();
+            if (dbItem != null)
+            {
+                foreach (var prop in model.GetType().GetProperties())
+                {
+                    var val = prop.GetValue(model, null);
+                    prop.SetValue(dbItem, val);
+                }
+                
+                this.SaveChanges();
             }
         }
 
-        #endregion
+        public Task UpdateAndSaveAsync<T>(T model) where T : IPrimaryKey
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                this.UpdateAndSave<T>(model);
+            });
+        }
 
+        public Task SaveChangesAsync()
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                this.SaveChanges();
+            });
+        }
+
+        
 
     }
 }
