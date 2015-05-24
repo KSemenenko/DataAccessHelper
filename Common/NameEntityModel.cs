@@ -64,7 +64,7 @@ namespace EntityModel
             return null;
         }
 
-        public void UpdateSchema()
+        public void UpdateDataBaseSchema()
         {
             ISchemaHandler handler = this.GetSchemaHandler();
             string script = null;
@@ -138,6 +138,14 @@ namespace EntityModel
             return Task.Factory.StartNew(() =>
             {
                 this.SaveChanges();
+            });
+        }
+
+        public Task UpdateDataBaseSchemaAsync()
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                UpdateDataBaseSchema();
             });
         }
 
